@@ -1,0 +1,48 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:10.9
+    ports:
+      - "5432:5432/tcp"
+    environment:
+      POSTGRES_USER: databaseuser
+      POSTGRES_PASSWORD: 'changeme'
+      POSTGRES_DB: redash
+      PGDATA: '/var/lib/postgresql/data/pgdata'
+    volumes:
+      - './postgres:/var/lib/postgresql/data'
+    restart: unless-stopped
+
+  # mariadb:
+  #   container_name: mariadb
+  #   image: mariadb:10.9
+  #   ports:
+  #     - "3310:3306/tcp"
+  #   environment:
+  #     MARIADB_ROOT_PASSWORD: 'sismicohsl666'
+  #     MARIADB_USER: 'sismico'
+  #     MARIADB_PASSWORD: 'sismicohsl666'
+  #     MARIADB_DATABASE: 'redash'
+  #   volumes:
+  #     - './mariadb:/var/lib/mysql'
+  #   restart: unless-stopped
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379/tcp"
+    restart: unless-stopped
+
+  redash:
+    container_name: redash
+    image: redash/redash:8.0.0.b32245
+    ports:
+      - "3000:5000/tcp"
+    volumes:
+      - './redash:/redash'
+    depends_on:
+      - postgres
+    environment:
+      REDASH_DATABASE_URL: 'postgres://databaseuser:changeme@postgres:5432/redash'
+      REDASH_REDIS_URL: 'redis://redis:6379/0'
