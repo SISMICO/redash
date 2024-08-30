@@ -46,3 +46,25 @@ services:
     environment:
       REDASH_DATABASE_URL: 'postgres://databaseuser:changeme@postgres:5432/redash'
       REDASH_REDIS_URL: 'redis://redis:6379/0'
+
+  worker:
+    container_name: worker
+    image: redash/redash:8.0.0.b32245
+    command: dev_worker
+    depends_on:
+      - redash
+    environment:
+      REDASH_DATABASE_URL: 'postgres://databaseuser:changeme@postgres:5432/redash'
+      REDASH_REDIS_URL: 'redis://redis:6379/0'
+    restart: unless-stopped
+
+  # scheduler:
+  #   container_name: scheduler
+  #   image: redash/redash:8.0.0.b32245
+  #   command: dev_scheduler
+  #   depends_on:
+  #     - redash
+  #   environment:
+  #     REDASH_DATABASE_URL: 'postgres://databaseuser:changeme@postgres:5432/redash'
+  #     REDASH_REDIS_URL: 'redis://redis:6379/0'
+  #   restart: unless-stopped
